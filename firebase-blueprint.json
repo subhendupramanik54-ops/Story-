@@ -1,0 +1,352 @@
+{
+  "entities": {
+    "StoryboardProject": {
+      "title": "StoryboardProject",
+      "description": "A user-owned AI filmmaking and storyboard project with story script, language, genre, and episode metadata.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID matching request.auth.uid (immutable)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Project title (1-120 chars)."
+        },
+        "logline": {
+          "type": "string",
+          "description": "Short cinematic premise or tagline (0-500 chars)."
+        },
+        "language": {
+          "type": "string",
+          "enum": ["Hindi", "Gujarati", "Bengali", "English"],
+          "description": "Primary story language."
+        },
+        "genre": {
+          "type": "string",
+          "enum": ["Anime", "Romance", "Fantasy", "Horror", "Mystery", "Drama"],
+          "description": "Story genre."
+        },
+        "artStyle": {
+          "type": "string",
+          "enum": ["Anime", "Realistic 3D", "Cinematic"],
+          "description": "Visual style for storyboard frames and prompts."
+        },
+        "aspectRatio": {
+          "type": "string",
+          "enum": ["9:16", "16:9", "1:1"],
+          "description": "Target video/image aspect ratio."
+        },
+        "totalEpisodes": {
+          "type": "integer",
+          "description": "Planned number of episodes (1-60)."
+        },
+        "currentEpisode": {
+          "type": "integer",
+          "description": "Current active episode number (1-60)."
+        },
+        "storyText": {
+          "type": "string",
+          "description": "Full story manuscript text across episodes (0-25000 chars)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["DRAFT", "IN_PRODUCTION", "COMPLETED"],
+          "description": "Production stage of the project."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "title",
+        "logline",
+        "language",
+        "genre",
+        "artStyle",
+        "aspectRatio",
+        "totalEpisodes",
+        "currentEpisode",
+        "storyText",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StoryboardScene": {
+      "title": "StoryboardScene",
+      "description": "Individual shot-by-shot scene inside a storyboard project with camera directions, English image/video prompts, Hindi dialogue, voice-over, subtitles, and BGM/SFX cues.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID matching request.auth.uid (immutable)."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Parent project document ID (immutable)."
+        },
+        "episodeNumber": {
+          "type": "integer",
+          "description": "Episode number (1-60)."
+        },
+        "sceneNumber": {
+          "type": "integer",
+          "description": "Sequential scene index (1-200)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short scene heading (1-150 chars)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Visual scene breakdown and staging description (0-3000 chars)."
+        },
+        "cameraAngle": {
+          "type": "string",
+          "description": "Camera framing and angle (0-200 chars)."
+        },
+        "cameraMovement": {
+          "type": "string",
+          "description": "Camera movement instructions for Google Flow (0-300 chars)."
+        },
+        "characterAction": {
+          "type": "string",
+          "description": "Character blocking and motion cues (0-1000 chars)."
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Scene clip duration in seconds (1-60)."
+        },
+        "imagePrompt": {
+          "type": "string",
+          "description": "Detailed English image generation prompt (0-3000 chars)."
+        },
+        "videoPrompt": {
+          "type": "string",
+          "description": "Google Flow image-to-video prompt (0-3000 chars)."
+        },
+        "consistencyNotes": {
+          "type": "string",
+          "description": "Character and wardrobe consistency instructions (0-1000 chars)."
+        },
+        "dialogueCharacter": {
+          "type": "string",
+          "description": "Speaking character name or Narrator (0-120 chars)."
+        },
+        "hindiDialogue": {
+          "type": "string",
+          "description": "Hindi dialogue line for the scene (0-2000 chars)."
+        },
+        "voiceOverScript": {
+          "type": "string",
+          "description": "Voice-over narration script and delivery notes (0-2000 chars)."
+        },
+        "subtitleText": {
+          "type": "string",
+          "description": "Subtitle cue text for the scene (0-1000 chars)."
+        },
+        "bgmPrompt": {
+          "type": "string",
+          "description": "Background music mood and instrumentation cue (0-500 chars)."
+        },
+        "sfxPrompt": {
+          "type": "string",
+          "description": "Sound effects cue (0-500 chars)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "projectId",
+        "episodeNumber",
+        "sceneNumber",
+        "title",
+        "description",
+        "cameraAngle",
+        "cameraMovement",
+        "characterAction",
+        "durationSeconds",
+        "imagePrompt",
+        "videoPrompt",
+        "consistencyNotes",
+        "dialogueCharacter",
+        "hindiDialogue",
+        "voiceOverScript",
+        "subtitleText",
+        "bgmPrompt",
+        "sfxPrompt",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CharacterProfile": {
+      "title": "CharacterProfile",
+      "description": "Reusable Character Bible entry defining appearance, clothing, hairstyle, expressions, voice tone, and consistency token.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID matching request.auth.uid (immutable)."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Optional linked project ID, or empty string for reusable studio-wide character (0-128 chars)."
+        },
+        "name": {
+          "type": "string",
+          "description": "Character name (1-100 chars)."
+        },
+        "role": {
+          "type": "string",
+          "description": "Story role such as Protagonist, Antagonist, Mentor (0-100 chars)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Character bio, facial features, and build (0-2000 chars)."
+        },
+        "clothing": {
+          "type": "string",
+          "description": "Signature outfit and accessories (0-600 chars)."
+        },
+        "hairstyle": {
+          "type": "string",
+          "description": "Hair color, cut, and styling details (0-400 chars)."
+        },
+        "expressions": {
+          "type": "string",
+          "description": "Key emotional expressions and mannerisms (0-600 chars)."
+        },
+        "consistencyToken": {
+          "type": "string",
+          "description": "Reusable English prompt anchor to keep character appearance consistent across shots (0-1500 chars)."
+        },
+        "voiceTone": {
+          "type": "string",
+          "description": "Voice casting and delivery tone for Hindi dialogue (0-200 chars)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "projectId",
+        "name",
+        "role",
+        "description",
+        "clothing",
+        "hairstyle",
+        "expressions",
+        "consistencyToken",
+        "voiceTone",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SavedPrompt": {
+      "title": "SavedPrompt",
+      "description": "Saved standalone Image Prompt, Google Flow Video Prompt, or Voice Script generated in Studio tools.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID matching request.auth.uid (immutable)."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Optional associated project ID (0-128 chars)."
+        },
+        "promptType": {
+          "type": "string",
+          "enum": ["IMAGE", "VIDEO", "VOICE"],
+          "description": "Category of saved studio prompt."
+        },
+        "title": {
+          "type": "string",
+          "description": "Prompt label or shot name (1-150 chars)."
+        },
+        "promptText": {
+          "type": "string",
+          "description": "Full prompt or script content (1-5000 chars)."
+        },
+        "aspectRatio": {
+          "type": "string",
+          "description": "Aspect ratio metadata such as 9:16, 16:9, or 1:1 (0-16 chars)."
+        },
+        "artStyle": {
+          "type": "string",
+          "description": "Style or camera movement metadata (0-80 chars)."
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Video clip duration in seconds (0-60)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp written via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp written via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "projectId",
+        "promptType",
+        "title",
+        "promptText",
+        "aspectRatio",
+        "artStyle",
+        "durationSeconds",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/StoryboardProject" },
+      "description": "User-scoped collection of AI storyboard filmmaking projects."
+    },
+    "/users/{userId}/projects/{projectId}/scenes/{sceneId}": {
+      "schema": { "$ref": "#/entities/StoryboardScene" },
+      "description": "Shot-by-shot storyboard scenes nested under a user's project."
+    },
+    "/users/{userId}/characters/{characterId}": {
+      "schema": { "$ref": "#/entities/CharacterProfile" },
+      "description": "User-scoped reusable Character Bible profiles."
+    },
+    "/users/{userId}/promptHistory/{promptId}": {
+      "schema": { "$ref": "#/entities/SavedPrompt" },
+      "description": "User-scoped archive of generated Image, Google Flow Video, and Voice prompts."
+    }
+  }
+}

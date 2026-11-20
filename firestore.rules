@@ -1,0 +1,255 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Security Primitives ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidOptionalId(id) {
+      return id is string && id.size() <= 128 && (id.size() == 0 || id.matches('^[a-zA-Z0-9_\\-]+$'));
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    // --- Entity Validation Blueprints ---
+    function isValidProject(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+             data.logline is string && data.logline.size() <= 500 &&
+             data.language is string && data.language in ['Hindi', 'Gujarati', 'Bengali', 'English'] &&
+             data.genre is string && data.genre in ['Anime', 'Romance', 'Fantasy', 'Horror', 'Mystery', 'Drama'] &&
+             data.artStyle is string && data.artStyle in ['Anime', 'Realistic 3D', 'Cinematic'] &&
+             data.aspectRatio is string && data.aspectRatio in ['9:16', '16:9', '1:1'] &&
+             data.totalEpisodes is int && data.totalEpisodes >= 1 && data.totalEpisodes <= 60 &&
+             data.currentEpisode is int && data.currentEpisode >= 1 && data.currentEpisode <= 60 &&
+             data.storyText is string && data.storyText.size() <= 25000 &&
+             data.status is string && data.status in ['DRAFT', 'IN_PRODUCTION', 'COMPLETED'];
+    }
+
+    function isValidScene(data, projectId) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.projectId is string && data.projectId == projectId &&
+             data.episodeNumber is int && data.episodeNumber >= 1 && data.episodeNumber <= 60 &&
+             data.sceneNumber is int && data.sceneNumber >= 1 && data.sceneNumber <= 200 &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.description is string && data.description.size() <= 3000 &&
+             data.cameraAngle is string && data.cameraAngle.size() <= 200 &&
+             data.cameraMovement is string && data.cameraMovement.size() <= 300 &&
+             data.characterAction is string && data.characterAction.size() <= 1000 &&
+             data.durationSeconds is int && data.durationSeconds >= 1 && data.durationSeconds <= 60 &&
+             data.imagePrompt is string && data.imagePrompt.size() <= 3000 &&
+             data.videoPrompt is string && data.videoPrompt.size() <= 3000 &&
+             data.consistencyNotes is string && data.consistencyNotes.size() <= 1000 &&
+             data.dialogueCharacter is string && data.dialogueCharacter.size() <= 120 &&
+             data.hindiDialogue is string && data.hindiDialogue.size() <= 2000 &&
+             data.voiceOverScript is string && data.voiceOverScript.size() <= 2000 &&
+             data.subtitleText is string && data.subtitleText.size() <= 1000 &&
+             data.bgmPrompt is string && data.bgmPrompt.size() <= 500 &&
+             data.sfxPrompt is string && data.sfxPrompt.size() <= 500;
+    }
+
+    function isValidCharacter(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             isValidOptionalId(data.projectId) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.role is string && data.role.size() <= 100 &&
+             data.description is string && data.description.size() <= 2000 &&
+             data.clothing is string && data.clothing.size() <= 600 &&
+             data.hairstyle is string && data.hairstyle.size() <= 400 &&
+             data.expressions is string && data.expressions.size() <= 600 &&
+             data.consistencyToken is string && data.consistencyToken.size() <= 1500 &&
+             data.voiceTone is string && data.voiceTone.size() <= 200;
+    }
+
+    function isValidSavedPrompt(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             isValidOptionalId(data.projectId) &&
+             data.promptType is string && data.promptType in ['IMAGE', 'VIDEO', 'VOICE'] &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.promptText is string && data.promptText.size() >= 1 && data.promptText.size() <= 5000 &&
+             data.aspectRatio is string && data.aspectRatio.size() <= 16 &&
+             data.artStyle is string && data.artStyle.size() <= 80 &&
+             data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 60;
+    }
+
+    // --- Collection Rules ---
+    match /users/{userId}/projects/{projectId} {
+      allow get: if isOwner(userId) && isValidId(projectId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(projectId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'title', 'logline', 'language', 'genre', 'artStyle',
+                         'aspectRatio', 'totalEpisodes', 'currentEpisode', 'storyText',
+                         'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'title', 'logline', 'language', 'genre', 'artStyle',
+                         'aspectRatio', 'totalEpisodes', 'currentEpisode', 'storyText',
+                         'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidProject(incoming()) &&
+                       isValidTimestamp(incoming().createdAt) &&
+                       isValidTimestamp(incoming().updatedAt);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(projectId) &&
+                       isValidProject(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       isValidTimestamp(incoming().updatedAt) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'title', 'logline', 'language', 'genre', 'artStyle',
+                         'aspectRatio', 'totalEpisodes', 'currentEpisode',
+                         'storyText', 'status', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(projectId);
+
+      // Nested Storyboard Scenes subcollection with Parent Gate on create
+      match /scenes/{sceneId} {
+        allow get: if isOwner(userId) && isValidId(projectId) && isValidId(sceneId);
+        allow list: if isOwner(userId) && isValidId(projectId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(projectId) &&
+                         isValidId(sceneId) &&
+                         incoming().keys().hasAll([
+                           'userId', 'projectId', 'episodeNumber', 'sceneNumber', 'title',
+                           'description', 'cameraAngle', 'cameraMovement', 'characterAction',
+                           'durationSeconds', 'imagePrompt', 'videoPrompt', 'consistencyNotes',
+                           'dialogueCharacter', 'hindiDialogue', 'voiceOverScript',
+                           'subtitleText', 'bgmPrompt', 'sfxPrompt', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'userId', 'projectId', 'episodeNumber', 'sceneNumber', 'title',
+                           'description', 'cameraAngle', 'cameraMovement', 'characterAction',
+                           'durationSeconds', 'imagePrompt', 'videoPrompt', 'consistencyNotes',
+                           'dialogueCharacter', 'hindiDialogue', 'voiceOverScript',
+                           'subtitleText', 'bgmPrompt', 'sfxPrompt', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidScene(incoming(), projectId) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         exists(/databases/$(database)/documents/users/$(userId)/projects/$(projectId));
+
+        allow update: if isOwner(userId) &&
+                         isValidId(projectId) &&
+                         isValidId(sceneId) &&
+                         isValidScene(incoming(), projectId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().projectId == existing().projectId &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'episodeNumber', 'sceneNumber', 'title', 'description',
+                           'cameraAngle', 'cameraMovement', 'characterAction',
+                           'durationSeconds', 'imagePrompt', 'videoPrompt',
+                           'consistencyNotes', 'dialogueCharacter', 'hindiDialogue',
+                           'voiceOverScript', 'subtitleText', 'bgmPrompt', 'sfxPrompt',
+                           'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(projectId) && isValidId(sceneId);
+      }
+    }
+
+    match /users/{userId}/characters/{characterId} {
+      allow get: if isOwner(userId) && isValidId(characterId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(characterId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'projectId', 'name', 'role', 'description',
+                         'clothing', 'hairstyle', 'expressions', 'consistencyToken',
+                         'voiceTone', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'projectId', 'name', 'role', 'description',
+                         'clothing', 'hairstyle', 'expressions', 'consistencyToken',
+                         'voiceTone', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidCharacter(incoming()) &&
+                       isValidTimestamp(incoming().createdAt) &&
+                       isValidTimestamp(incoming().updatedAt);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(characterId) &&
+                       isValidCharacter(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       isValidTimestamp(incoming().updatedAt) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'projectId', 'name', 'role', 'description', 'clothing',
+                         'hairstyle', 'expressions', 'consistencyToken', 'voiceTone',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(characterId);
+    }
+
+    match /users/{userId}/promptHistory/{promptId} {
+      allow get: if isOwner(userId) && isValidId(promptId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(promptId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'projectId', 'promptType', 'title', 'promptText',
+                         'aspectRatio', 'artStyle', 'durationSeconds', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'projectId', 'promptType', 'title', 'promptText',
+                         'aspectRatio', 'artStyle', 'durationSeconds', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidSavedPrompt(incoming()) &&
+                       isValidTimestamp(incoming().createdAt) &&
+                       isValidTimestamp(incoming().updatedAt);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(promptId) &&
+                       isValidSavedPrompt(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       isValidTimestamp(incoming().updatedAt) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'projectId', 'promptType', 'title', 'promptText',
+                         'aspectRatio', 'artStyle', 'durationSeconds', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(promptId);
+    }
+  }
+}

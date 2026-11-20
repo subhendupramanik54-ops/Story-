@@ -1,0 +1,6 @@
+{
+  "name": "Bharat Storyboard AI",
+  "description": "AI filmmaking and storyboard creation studio for Indian creators with story generation, character bibles, image prompts, Google Flow video prompts, and Hindi voice scripts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

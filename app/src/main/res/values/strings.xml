@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">Bharat Storyboard AI</string>
+    <string name="app_tagline">AI Story • Image • Video • Voice Studio</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_stories">Stories</string>
+    <string name="nav_studio">Studio</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Auth Screen -->
+    <string name="auth_headline">Direct Indian Stories with AI</string>
+    <string name="auth_subtitle">Turn a single story idea into scene-by-scene storyboards, Character Bibles, Google Flow video prompts, and Hindi voice scripts.</string>
+    <string name="auth_sign_in_google">Sign in with Google</string>
+    <string name="auth_signing_in">Signing in…</string>
+    <string name="auth_cloud_badge">Cloud Sync • Gemini AI • Play Ready</string>
+
+    <!-- Home Quick Actions -->
+    <string name="action_create_story">Create New Story</string>
+    <string name="action_storyboard_studio">Storyboard Studio</string>
+    <string name="action_character_studio">Character Studio</string>
+    <string name="action_image_prompts">Image Prompt Generator</string>
+    <string name="action_video_prompts">Video Prompt Generator</string>
+    <string name="action_voice_studio">Voice Studio</string>
+    <string name="action_my_projects">My Projects</string>
+    <string name="action_export_project">Export Project</string>
+
+    <!-- Studio Tabs -->
+    <string name="studio_tab_storyboard">Storyboard</string>
+    <string name="studio_tab_characters">Characters</string>
+    <string name="studio_tab_image">Image AI</string>
+    <string name="studio_tab_video">Flow Video</string>
+    <string name="studio_tab_voice">Voice &amp; SFX</string>
+
+    <!-- Common Actions -->
+    <string name="btn_generate">Generate with AI</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_copy">Copy</string>
+    <string name="btn_copied">Copied to clipboard</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_duplicate">Duplicate</string>
+    <string name="btn_regenerate">Regenerate</string>
+    <string name="btn_export_pdf">Export PDF</string>
+    <string name="btn_export_txt">Export Script (.txt)</string>
+    <string name="btn_sign_out">Sign Out</string>
+    <string name="btn_test_connection">Test Live Connection</string>
+
+    <!-- Empty & Loading States -->
+    <string name="empty_projects_title">No Projects Yet</string>
+    <string name="empty_projects_desc">Start in Stories to generate an original Indian tale or create a new project directly.</string>
+    <string name="empty_scenes_title">No Storyboard Scenes</string>
+    <string name="empty_scenes_desc">Select a project and tap Generate Scenes to break your story into cinematic shots.</string>
+    <string name="empty_characters_title">Build Your Character Bible</string>
+    <string name="empty_characters_desc">Generate cast profiles from your story or add reusable character consistency sheets.</string>
+    <string name="loading_ai_generation">Gemini AI is crafting your studio output…</string>
+    <string name="loading_image_generation">Rendering reference artwork (30–60s)…</string>
+</resources>
